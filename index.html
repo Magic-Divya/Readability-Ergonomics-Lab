@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Readability Lab | HCI Experiment 7</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="brand-icon">R</div><div><h1>Readability Lab</h1><p>HCI Experiment 07 · Ergonomics & Reading Performance</p></div></div>
+    <div class="top-actions"><span class="status-dot"></span><span id="sessionStatus">Experiment ready</span><button id="resetAll" class="btn btn-ghost">Reset</button></div>
+  </header>
+
+  <main class="page-wrap">
+    <section class="hero">
+      <div><span class="eyebrow">HUMAN-COMPUTER INTERACTION</span><h2>Design a more readable experience.</h2><p>Adjust visual ergonomics, read a passage, then measure how each layout affects speed and comprehension.</p></div>
+      <div class="hero-stat"><span class="stat-label">TRIALS COMPLETED</span><strong id="trialCount">0</strong><span class="stat-foot">Saved in this session</span></div>
+    </section>
+
+    <div class="workspace">
+      <aside class="panel controls-panel">
+        <div class="panel-heading"><div><span class="section-kicker">01 / CONFIGURE</span><h3>Ergonomic factors</h3></div><span class="pill">Live preview</span></div>
+        <div class="control-group"><div class="control-label"><label for="fontSize">Font size</label><output id="fontSizeOut">18 px</output></div><input id="fontSize" type="range" min="12" max="30" value="18"/><div class="range-ends"><span>12 px</span><span>30 px</span></div></div>
+        <div class="control-group"><div class="control-label"><label for="lineHeight">Line spacing</label><output id="lineHeightOut">1.65×</output></div><input id="lineHeight" type="range" min="1.1" max="2.2" step="0.05" value="1.65"/><div class="range-ends"><span>Compact</span><span>Relaxed</span></div></div>
+        <div class="control-group"><div class="control-label"><label for="letterSpace">Letter spacing</label><output id="letterSpaceOut">0.2 px</output></div><input id="letterSpace" type="range" min="-0.5" max="2" step="0.1" value="0.2"/><div class="range-ends"><span>Tight</span><span>Open</span></div></div>
+        <div class="control-group"><div class="control-label"><label for="contentWidth">Text width</label><output id="contentWidthOut">640 px</output></div><input id="contentWidth" type="range" min="380" max="760" step="20" value="640"/><div class="range-ends"><span>Narrow</span><span>Wide</span></div></div>
+        <div class="control-group"><div class="control-label"><label for="paragraphGap">Paragraph spacing</label><output id="paragraphGapOut">18 px</output></div><input id="paragraphGap" type="range" min="8" max="36" step="2" value="18"/><div class="range-ends"><span>Close</span><span>Spacious</span></div></div>
+        <div class="control-group"><label for="fontFamily">Typeface</label><select id="fontFamily"><option value="system">System sans-serif</option><option value="serif">Georgia (serif)</option><option value="dyslexic">Verdana (wide letterforms)</option><option value="mono">Monospace</option></select></div>
+        <div class="control-group"><label>Reading theme</label><div class="theme-options"><button class="theme-btn active" data-theme="light"><span class="swatch light-swatch"></span>Light</button><button class="theme-btn" data-theme="warm"><span class="swatch warm-swatch"></span>Warm</button><button class="theme-btn" data-theme="dark"><span class="swatch dark-swatch"></span>Dark</button><button class="theme-btn" data-theme="high"><span class="swatch high-swatch"></span>High contrast</button></div></div>
+        <div class="control-group"><label class="switch-row" for="focusMode"><span><b>Focus mode</b><small>Reduce surrounding distractions</small></span><input id="focusMode" type="checkbox"/><span class="switch"></span></label></div>
+        <div class="control-group"><label class="switch-row" for="showRuler"><span><b>Reading ruler</b><small>Highlight a line while reading</small></span><input id="showRuler" type="checkbox"/><span class="switch"></span></label></div>
+        <button id="applyBaseline" class="btn btn-outline full-width">Restore baseline layout</button>
+      </aside>
+
+      <section class="center-column">
+        <article class="panel reading-panel" id="readingPanel">
+          <div class="panel-heading"><div><span class="section-kicker">02 / READ</span><h3>Reading workspace</h3></div><span id="themeLabel" class="pill">Light theme</span></div>
+          <div class="passage-toolbar"><label for="passageSelect">Passage</label><select id="passageSelect"><option value="0">Digital wellbeing</option><option value="1">Urban green spaces</option><option value="2">Learning through feedback</option></select><span id="wordCount" class="word-count">— words</span></div>
+          <div id="readingSurface" class="reading-surface theme-light"><div class="reading-content" id="readingContent" tabindex="0"></div><div id="ruler" class="reading-ruler"></div></div>
+          <div class="read-actions"><div class="timer-display"><span class="timer-icon">◷</span><div><strong id="timerValue">00:00</strong><small id="timerHint">Timer starts when you begin</small></div></div><div class="button-row"><button id="startReading" class="btn btn-primary">Start reading</button><button id="finishReading" class="btn btn-dark" disabled>Finish & test</button></div></div>
+          <div class="notice" id="readingNotice">Tip: Read naturally and try to understand the passage. Your timer will run until you finish reading.</div>
+        </article>
+
+        <article class="panel quiz-panel hidden" id="quizPanel"><div class="panel-heading"><div><span class="section-kicker">03 / CHECK UNDERSTANDING</span><h3>Comprehension check</h3></div><span class="pill">3 questions</span></div><p class="muted">Choose the best answer for each question based on the passage you just read.</p><form id="quizForm"><div id="quizQuestions"></div><button class="btn btn-primary" type="submit">Submit answers & save trial</button></form></article>
+
+        <section class="panel metrics-panel"><div class="panel-heading"><div><span class="section-kicker">04 / OBSERVE</span><h3>Current layout indicators</h3></div><span class="pill">Heuristic estimate</span></div><p class="muted small">These indicators describe the selected settings; actual performance is measured after each reading trial.</p><div class="metric-grid"><div class="metric-card"><div class="metric-top"><span>Typography</span><b id="typeScore">82</b></div><div class="meter"><span id="typeMeter"></span></div><small id="typeLabel">Comfortable</small></div><div class="metric-card"><div class="metric-top"><span>Line length</span><b id="widthScore">86</b></div><div class="meter"><span id="widthMeter"></span></div><small id="widthLabel">Balanced</small></div><div class="metric-card"><div class="metric-top"><span>Spacing</span><b id="spaceScore">88</b></div><div class="meter"><span id="spaceMeter"></span></div><small id="spaceLabel">Relaxed</small></div><div class="metric-card overall-card"><div class="metric-top"><span>Layout index</span><b id="overallScore">85</b></div><div class="meter"><span id="overallMeter"></span></div><small>Heuristic score / 100</small></div></div><p id="recommendation" class="recommendation"><span>✦</span> Balanced starting point. Complete a trial to evaluate real reading performance.</p></section>
+      </section>
+
+      <aside class="right-column">
+        <section class="panel trial-panel"><div class="panel-heading"><div><span class="section-kicker">LIVE SESSION</span><h3>Performance snapshot</h3></div><span class="live-badge">● LIVE</span></div><div class="big-metric"><strong id="latestWpm">—</strong><span>words per minute</span></div><div class="snapshot-row"><div><small>Comprehension</small><strong id="latestAccuracy">—</strong></div><div><small>Reading time</small><strong id="latestTime">—</strong></div></div><div class="snapshot-row"><div><small>Best speed</small><strong id="bestWpm">—</strong></div><div><small>Trials saved</small><strong id="savedTrials">0</strong></div></div><div class="divider"></div><p class="small muted">For a fair comparison, keep the passage difficulty similar and change one or two factors per trial.</p></section>
+        <section class="panel chart-panel"><div class="panel-heading"><div><span class="section-kicker">COMPARISON</span><h3>Trial performance</h3></div></div><div class="chart-wrap"><canvas id="performanceChart" aria-label="Reading speed by trial"></canvas></div><div class="chart-legend"><span><i class="legend-dot speed-dot"></i>Words/min</span><span><i class="legend-dot accuracy-dot"></i>Accuracy %</span></div></section>
+        <section class="panel history-panel"><div class="panel-heading"><div><span class="section-kicker">EXPERIMENT LOG</span><h3>Saved trials</h3></div><button id="clearTrials" class="text-btn">Clear</button></div><div id="trialHistory" class="trial-history"><div class="empty-state"><span>▤</span><b>No trials yet</b><small>Your measured results will appear here.</small></div></div><button id="exportCsv" class="btn btn-outline full-width" disabled>↓ Export results (CSV)</button></section>
+      </aside>
+    </div>
+    <footer><span>Readability Lab · HCI Experiment 07</span><span>Local session only · No data is uploaded</span></footer>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="script.js"></script>
+</body>
+</html>
